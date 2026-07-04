@@ -48,6 +48,8 @@ async def get_latest_config(request: Request) -> dict:
                 "habit_id": h.habit_id,
                 "label": h.label,
                 "method": h.notification.method,
+                "phrase": h.notification.phrase,
+                "audio_url": h.notification.audio_url,
             }
             for h in config.habits
         ],

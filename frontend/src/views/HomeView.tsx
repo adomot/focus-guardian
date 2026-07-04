@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ApiError, createSession, fetchLatestConfig } from '../api'
 import { unlockAudio } from '../audio'
 import type { FocusConfig, SessionState } from '../types'
@@ -15,6 +15,37 @@ export function HomeView({ onStartHearing, onSessionStart }: HomeViewProps) {
   const [starting, setStarting] = useState(false)
   const [cameraDenied, setCameraDenied] = useState(false)
   const [startError, setStartError] = useState<string | null>(null)
+  const [playingHabitId, setPlayingHabitId] = useState<string | null>(null)
+  const previewAudioRef = useRef<HTMLAudioElement | null>(null)
+
+  const stopPreview = () => {
+    previewAudioRef.current?.pause()
+    previewAudioRef.current = null
+    setPlayingHabitId(null)
+  }
+
+  const togglePreview = (habitId: string, audioUrl: string) => {
+    if (playingHabitId === habitId) {
+      stopPreview()
+      return
+    }
+    stopPreview()
+    unlockAudio()
+    const audio = new Audio(audioUrl)
+    audio.onended = () => {
+      if (previewAudioRef.current === audio) {
+        stopPreview()
+      }
+    }
+    audio.play().catch((error: unknown) => {
+      console.warn('試聴の再生に失敗しました', error)
+      stopPreview()
+    })
+    previewAudioRef.current = audio
+    setPlayingHabitId(habitId)
+  }
+
+  useEffect(() => stopPreview, [])
 
   useEffect(() => {
     let cancelled = false
@@ -84,8 +115,7 @@ export function HomeView({ onStartHearing, onSessionStart }: HomeViewProps) {
   return (
     <div className="view home-view">
       <header className="app-header">
-        <h1>Focus Guardian</h1>
-        <p className="tagline">サボり絶対しばく君</p>
+        <h1>サボり絶対しばく君</h1>
       </header>
 
       {loadError && <div className="banner banner-error">{loadError}</div>}
@@ -102,7 +132,16 @@ export function HomeView({ onStartHearing, onSessionStart }: HomeViewProps) {
             {config.habits.map((habit) => (
               <li key={habit.habit_id}>
                 <span className="habit-label">{habit.label}</span>
-                <span className="habit-method">{habit.method === 'bgm' ? 'BGM' : '音声'}</span>
+                <span className="habit-method">
+                  {habit.method === 'bgm' ? 'BGM' : `音声「${habit.phrase ?? ''}」`}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-small btn-preview"
+                  onClick={() => togglePreview(habit.habit_id, habit.audio_url)}
+                >
+                  {playingHabitId === habit.habit_id ? '⏹ 停止' : '▶ 試聴'}
+                </button>
               </li>
             ))}
           </ul>

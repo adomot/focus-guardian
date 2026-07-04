@@ -26,6 +26,8 @@ export interface HabitConfig {
   habit_id: string
   label: string
   method: InterventionMethod
+  phrase: string | null
+  audio_url: string
 }
 
 export interface FocusConfig {
