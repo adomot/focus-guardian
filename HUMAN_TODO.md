@@ -5,9 +5,9 @@
 
 ## 0. ハッカソン登録（締切 7/10 23:59・最優先）
 
-- [ ] Findy Conference の申込ページからハッカソンにエントリー
-- [ ] Google Cloud $300 クレジットクーポンを受け取る（先着・数量限定なので早めに）
-- [ ] Proto Pedia アカウント作成 → https://protopedia.net/
+- [x] ハッカソンにエントリー → https://conference.findy-code.io/conferences/DevOps-AI-Agent-Hackathon/30/registration
+- [x] Google Cloud $300 クーポン → **対象外だった（先着枠終了）**。実コストは Gemini 判定 ≈ $0.13/日 + Cloud Run 無料枠内なので自費でも数百円規模。新規 GCP アカウントなら標準の無料トライアル $300 も利用可
+- [x] Proto Pedia アカウント作成 → https://protopedia.net/
 
 ## 1. GitHub リポジトリの公開
 
