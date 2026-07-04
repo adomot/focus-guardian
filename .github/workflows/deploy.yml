@@ -1,0 +1,55 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "0.11.21"
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run pytest -q
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy focus-guardian \
+            --source . \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --region asia-northeast1 \
+            --allow-unauthenticated \
+            --max-instances 1 \
+            --memory 512Mi \
+            --set-env-vars "REPOSITORY_BACKEND=firestore,AGENTS_BACKEND=adk,ASSETS_BACKEND=gcs,SPEAKER_ADAPTER=voicemonkey,GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }},GOOGLE_CLOUD_LOCATION=asia-northeast1,GOOGLE_GENAI_USE_VERTEXAI=TRUE,GCS_ASSETS_BUCKET=${{ secrets.GCS_ASSETS_BUCKET }},VOICEMONKEY_DEVICE=${{ secrets.VOICEMONKEY_DEVICE }}" \
+            --set-secrets "VOICEMONKEY_TOKEN=voicemonkey-token:latest"
+      - name: Health check
+        run: |
+          URL=$(gcloud run services describe focus-guardian \
+            --project "${{ secrets.GCP_PROJECT_ID }}" \
+            --region asia-northeast1 --format 'value(status.url)')
+          curl -sf "$URL/healthz"
