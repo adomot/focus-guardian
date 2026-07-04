@@ -1,0 +1,61 @@
+<meta charset="utf-8">
+<title>Focus Guardian Architecture</title>
+<style>
+  body { margin: 0; background: #ffffff; font-family: "Hiragino Sans", sans-serif; }
+  #diagram { width: 1480px; padding: 24px; background: #ffffff; }
+</style>
+<div id="diagram">
+  <pre class="mermaid">
+%%{init: {"theme": "base", "themeVariables": {
+  "primaryColor": "#e8f0fe", "primaryBorderColor": "#4285f4", "primaryTextColor": "#202124",
+  "lineColor": "#5f6368", "fontSize": "16px", "fontFamily": "Hiragino Sans"
+}, "flowchart": {"nodeSpacing": 40, "rankSpacing": 70, "curve": "basis"}}}%%
+flowchart LR
+  subgraph USER["🏠 ユーザ環境"]
+    direction TB
+    BROWSER["🖥️ ブラウザ<br/>ヒアリングチャット / ダッシュボード<br/>Webカメラ定期キャプチャ (60秒毎)<br/>フォールバック音声再生"]
+    ECHO["🔊 Amazon Echo"]
+  end
+
+  subgraph GCP["☁️ Google Cloud"]
+    direction TB
+    subgraph RUN["Cloud Run (単一サービス / CI・CDで自動デプロイ)"]
+      direction TB
+      API["FastAPI"]
+      FLOW["ヒアリング<br/>ステートマシン"]
+      SAGENT["🤖 StructuringAgent<br/>(ADK)<br/>悪習慣→検知条件の構造化"]
+      JAGENT["🤖 JudgeAgent<br/>(ADK)<br/>画像から行動を分類"]
+      POLICY["InterventionPolicy<br/>発火判断・再介入抑制・復帰評価"]
+      SPEAKER["SpeakerAdapter<br/>(差し替え可能)"]
+    end
+    GEMINI["✨ Vertex AI<br/>Gemini 2.5 Flash Lite"]
+    TTS["🗣️ Cloud<br/>Text-to-Speech"]
+    FS[("🗄️ Firestore<br/>監視設定 / 判定履歴 / 介入履歴<br/>※画像は保存しない")]
+    GCS[("📦 Cloud Storage<br/>BGM / フレーズ MP3")]
+  end
+
+  VM["🐵 Voice Monkey API v3"]
+
+  BROWSER ==>|"① JPEG (768px) を60秒毎に POST"| API
+  API --> FLOW
+  FLOW -->|"② 悪習慣の構造化"| SAGENT
+  SAGENT --> GEMINI
+  FLOW -->|"③ フレーズ音声化"| TTS
+  TTS --> GCS
+  API ==>|"④ 画像判定"| JAGENT
+  JAGENT --> GEMINI
+  JAGENT ==>|"⑤ 判定結果"| POLICY
+  POLICY --> FS
+  FLOW --> FS
+  POLICY ==>|"⑥ 介入実行"| SPEAKER
+  SPEAKER ==>|"⑦ announce (音声URL)"| VM
+  VM ==> ECHO
+  SPEAKER -.->|"失敗時はブラウザ再生"| BROWSER
+  </pre>
+</div>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true });
+  await mermaid.run();
+  document.title = "RENDERED";
+</script>

@@ -1,83 +1,41 @@
-# あなたにやってもらう作業リスト
+# 作業分担リスト（2026-07-05 更新）
 
-コードは全て実装済み。以下は**人間にしかできない作業**です。上から順に進めてください。
-所要時間の目安: 合計 2〜3 時間（待ち時間除く）。
+## ✅ 完了済み
 
-## 0. ハッカソン登録（締切 7/10 23:59・最優先）
+- コード実装一式（バックエンド・フロントエンド・テスト24件・CI/CD）
+- 公開リポジトリ https://github.com/adomot/focus-guardian （CI グリーン）
+- Docker イメージのビルド・起動検証（本番同等構成）
+- gcloud CLI のインストール（`brew install google-cloud-sdk` 済み）
+- BGM 3曲の自作生成（`assets/bgm/*.mp3`、ライセンスフリー）
+- アーキテクチャ図 `docs/architecture.png`（Proto Pedia アップロード用）
+- Proto Pedia 下書き `docs/protopedia-draft.md` / デモ動画台本 `docs/demo-video-script.md`
+- ハッカソンエントリー / Proto Pedia アカウント（あなたが完了）
 
-- [x] ハッカソンにエントリー → https://conference.findy-code.io/conferences/DevOps-AI-Agent-Hackathon/30/registration
-- [x] Google Cloud $300 クーポン → **対象外だった（先着枠終了）**。実コストは Gemini 判定 ≈ $0.13/日 + Cloud Run 無料枠内なので自費でも数百円規模。新規 GCP アカウントなら標準の無料トライアル $300 も利用可
-- [x] Proto Pedia アカウント作成 → https://protopedia.net/
+## 🙋 あなたにしかできない作業（上から順に）
 
-## 1. GitHub リポジトリの公開
+### A. アカウント認証系（私は代行禁止）
 
-- [ ] 公開リポジトリを作成して push（コマンドは下記。リポジトリ名は任意、例: focus-guardian）
+1. **gcloud 認証**: このセッションで `! gcloud auth login` と `! gcloud auth application-default login` を実行（ブラウザで Google ログイン）
+2. **GCP プロジェクト作成 + 課金有効化**: https://console.cloud.google.com/ でプロジェクト作成 → 課金アカウント紐付け（クーポン対象外だったので自費 or 新規無料トライアル。試算: 数百円/月）
+3. **Voice Monkey**: https://voicemonkey.io に Amazon アカウントでログイン → Alexa アプリでスキル有効化 → Speaker デバイス作成 → **Alexa アプリでルーティン設定**（トリガー: Smart Home → Alexa Voice Monkey v3 → 作成した Speaker / アクション: open Voice Monkey + 実機 Echo 指定）→ https://app.voicemonkey.io/tokens でトークン発行
+4. **GitHub Secrets 登録**: リポジトリ Settings > Secrets and variables > Actions（値は下記 B-1 のスクリプトが出力）
 
-```bash
-cd ~/company/hackathon-findy
-gh repo create focus-guardian --public --source=. --push
-```
+### B. 認証さえ済めば私がやれる作業（合図をください）
 
-※ 私（Claude）に「push していい」と言ってもらえれば代行します。
+1. `./scripts/setup_gcp.sh <PROJECT_ID> adomot/focus-guardian` の実行（API 有効化・Firestore・バケット・WIF・シークレット作成）→ GitHub Secrets 用の値を出力
+2. BGM のバケットアップロード（`gcloud storage cp assets/bgm/*.mp3 ...`）
+3. Voice Monkey トークンの Secret Manager 登録（トークン文字列をもらえれば）
+4. タスク 1.2 実機スパイク（ADK + Vertex Gemini の実行 / Cloud TTS 日本語生成 / Voice Monkey announce 疎通）
+5. デプロイ実行（push）と、デプロイ URL でのブラウザ E2E 確認
+6. gh CLI での GitHub Secrets 登録代行（`gh secret set`。値をもらえれば私が入れます）
 
-## 2. GCP セットアップ（$300 クレジット適用後）
+### C. 提出まわり（締切 7/10 23:59）
 
-- [ ] gcloud CLI をインストール: `brew install google-cloud-sdk`
-- [ ] `gcloud auth login` と `gcloud auth application-default login`
-- [ ] GCP プロジェクトを作成し、課金を有効化（クレジット適用）
-- [ ] セットアップスクリプトを実行（API 有効化・Firestore・バケット・WIF・シークレットを一括作成）:
+1. **デモ動画の撮影・編集**（台本: `docs/demo-video-script.md`）→ YouTube/Vimeo にアップ（あなた）
+2. **Proto Pedia 登録**（下書き: `docs/protopedia-draft.md`、図: `docs/architecture.png`）→ フォーム入力・公開はあなた（ログインが必要なため）
+3. **最終応募フォーム**（Google Form）提出（あなた）
 
-```bash
-./scripts/setup_gcp.sh <PROJECT_ID> <GitHubユーザ名/リポジトリ名>
-```
+## 今すぐ動かして遊ぶ（ローカル・GCP不要）
 
-- [ ] スクリプト末尾に表示される 5 つの値を GitHub リポジトリの Settings > Secrets and variables > Actions > New repository secret に登録
-
-## 3. Voice Monkey（Alexa 出力）
-
-- [ ] https://voicemonkey.io で Login with Amazon → アカウント連携
-- [ ] Alexa アプリで Voice Monkey スキルを有効化
-- [ ] https://app.voicemonkey.io/speakers で Speaker デバイスを作成（名前例: focus-guardian）
-- [ ] Alexa アプリでルーティンを作成: トリガー「Smart Home → Alexa Voice Monkey v3 → 作成した VM Speaker」、アクション「open Voice Monkey」+ 鳴らしたい Echo 実機を指定
-- [ ] https://app.voicemonkey.io/tokens でトークンを発行し、シークレットに設定:
-
-```bash
-echo -n "<TOKEN>" | gcloud secrets versions add voicemonkey-token --data-file=-
-```
-
-- [ ] Speaker のデバイス ID を GitHub Secret `VOICEMONKEY_DEVICE` に登録
-- [ ] （確認）API Playground https://voicemonkey.io/docs/api/playground で announce を1回試す
-
-## 4. BGM 音源の用意
-
-- [ ] フリー音源（例: DOVA-SYNDROME、甘茶の音楽工房など商用可のもの）から3曲を MP3 で入手し、以下の名前で `assets/bgm/` に置く:
-  - `focus.mp3`（集中できるBGM）/ `nature.mp3`（自然音）/ `uptempo.mp3`（アップテンポ）
-- [ ] バケットにアップロード:
-
-```bash
-gcloud storage cp assets/bgm/*.mp3 gs://<PROJECT_ID>-focus-guardian-assets/bgm/
-```
-
-## 5. 初回デプロイの確認
-
-- [ ] 2〜4 が終わったら main に push（または GitHub Actions の Deploy を手動再実行）
-- [ ] Actions の Deploy が緑になり、表示された URL でアプリが開くことを確認
-- [ ] ここで私に「デプロイ URL で動作確認して」と言ってもらえれば、ブラウザで E2E 確認します
-
-## 6. 提出物（締切 7/10 23:59）
-
-- [ ] デモ動画の撮影（実演: ヒアリング → 監視 → スマホいじり → Echo から BGM）→ YouTube か Vimeo に限定公開でアップ
-- [ ] Proto Pedia に作品登録: タイトル / 概要 / 動画 URL / システム構成図（構成図は私が生成します）/ タグ `findy_hackathon` / ストーリー（下書きは私が書きます）
-- [ ] 最終応募フォーム（Google Form）から提出: GitHub URL + デプロイ URL + Proto Pedia URL
-
----
-
-## 補足: ローカルで今すぐ動かす（GCP 不要・フェイクモード）
-
-```bash
-# ターミナル1
-cd backend && uv run uvicorn app.main:app --reload --port 8000
-# ターミナル2
-cd frontend && npm run dev
-# → http://localhost:5173 （判定はフェイク: 常に「集中」判定）
-```
+http://localhost:8000 でフェイクモードのサーバが起動中です（判定は常に「集中」）。
+止まっていたら: `cd backend && STATIC_DIR=../frontend/dist uv run uvicorn app.main:app --port 8000`
