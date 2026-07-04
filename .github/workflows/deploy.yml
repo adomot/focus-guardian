@@ -62,4 +62,4 @@ jobs:
           URL=$(gcloud run services describe focus-guardian \
             --project "${{ secrets.GCP_PROJECT_ID }}" \
             --region asia-northeast1 --format 'value(status.url)')
-          curl -sf "$URL/healthz"
+          curl -sf "$URL/api/health"

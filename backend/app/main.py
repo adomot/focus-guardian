@@ -38,8 +38,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             content={"error": {"code": "internal", "message": "サーバエラーが発生しました"}},
         )
 
-    @app.get("/healthz")
-    async def healthz() -> dict[str, str]:
+    # /healthz は Google Frontend の予約パスで Cloud Run に届かないため /api/health を使う
+    @app.get("/api/health")
+    async def health() -> dict[str, str]:
         return {"status": "ok"}
 
     static_dir = Path(settings.static_dir)

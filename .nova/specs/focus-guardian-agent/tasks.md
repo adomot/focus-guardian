@@ -7,7 +7,7 @@
   - GitHub 公開リポジトリを作成して初期コミットを行う
   - _Requirements: 8.1, 8.2_
 
-- [ ] 1.2 (P) 外部依存の縦串検証スパイク
+- [x] 1.2 (P) 外部依存の縦串検証スパイク（残: Voice Monkey 実機再生はトークン取得後）
   - ADK v2.3 の LlmAgent 単発実行 + output_schema で構造化出力が返ることを実機確認する（schema 無視の報告があるため instruction にも形式を明記して検証）
   - Voice Monkey v3 の announce API で公開 MP3 URL が Echo 実機で再生されることを確認する
   - Cloud Text-to-Speech で日本語フレーズの MP3 が生成できることを確認する
