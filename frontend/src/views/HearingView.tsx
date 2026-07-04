@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { replyHearing, startHearing } from '../api'
 import type { HearingChoice, HearingTurn } from '../types'
 import botAvatar from '../assets/bot-avatar.png'
+import { PersonIcon } from '../icons'
 
 const BOT_REPLY_DELAY_MS = 200
 
@@ -106,7 +107,11 @@ export function HearingView({ onBackHome }: HearingViewProps) {
               <img className="chat-avatar" src={botAvatar} alt="Focus Guardian" />
             )}
             <div className={`bubble bubble-${message.role}`}>{message.text}</div>
-            {message.role === 'user' && <div className="chat-avatar chat-avatar-user">🙋</div>}
+            {message.role === 'user' && (
+              <div className="chat-avatar chat-avatar-user">
+                <PersonIcon size={17} />
+              </div>
+            )}
           </div>
         ))}
         {sending && (

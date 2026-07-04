@@ -1,33 +1,35 @@
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ApiError, endSession, postFrame } from '../api'
 import { playInterventionAudio } from '../audio'
 import { captureFrame, resolveCaptureIntervalMs } from '../capture'
+import { AlertIcon, CheckCircleIcon, HourglassIcon, UserOffIcon } from '../icons'
 import type { Judgment, JudgmentState, SessionState, SessionSummary } from '../types'
 
 interface StateMeta {
-  emoji: string
+  icon: ReactNode
   className: string
   label: (judgment: Judgment) => string
 }
 
 const STATE_META: Record<JudgmentState, StateMeta> = {
   focused: {
-    emoji: '🟢',
+    icon: <CheckCircleIcon color="#58a700" />,
     className: 'state-focused',
     label: () => '集中中',
   },
   habit: {
-    emoji: '🔴',
+    icon: <AlertIcon color="#ea2b2b" />,
     className: 'state-habit',
     label: (judgment) => `サボり検知: ${judgment.reason ?? '理由不明'}`,
   },
   absent: {
-    emoji: '⚪',
+    icon: <UserOffIcon color="#8a8a8a" />,
     className: 'state-absent',
     label: () => '不在',
   },
   error: {
-    emoji: '🟡',
+    icon: <AlertIcon color="#a07b00" />,
     className: 'state-error',
     label: () => '判定エラー',
   },
@@ -200,12 +202,14 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
       <section className={`status-panel ${meta ? meta.className : 'state-pending'}`}>
         {meta && latestJudgment ? (
           <>
-            <div className="status-emoji">{meta.emoji}</div>
+            <div className="status-icon">{meta.icon}</div>
             <div className="status-label">{meta.label(latestJudgment)}</div>
           </>
         ) : (
           <>
-            <div className="status-emoji">⏳</div>
+            <div className="status-icon">
+              <HourglassIcon color="#afafaf" />
+            </div>
             <div className="status-label">最初の判定を待っています...</div>
           </>
         )}

@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { ApiError, createSession, fetchLatestConfig } from '../api'
 import { unlockAudio } from '../audio'
+import { PlayIcon, StopIcon } from '../icons'
 import type { FocusConfig, SessionState } from '../types'
+
+const TILE_COLORS = ['#ff4b4b', '#ce82ff', '#ff9600', '#ffc800']
 
 interface HomeViewProps {
   onStartHearing: () => void
@@ -129,18 +132,34 @@ export function HomeView({ onStartHearing, onSessionStart }: HomeViewProps) {
           </dl>
           <h3>やめたい悪習慣</h3>
           <ul className="habit-list">
-            {config.habits.map((habit) => (
+            {config.habits.map((habit, index) => (
               <li key={habit.habit_id}>
-                <span className="habit-label">{habit.label}</span>
-                <span className="habit-method">
-                  {habit.method === 'bgm' ? 'BGM' : `音声「${habit.phrase ?? ''}」`}
+                <span
+                  className="habit-tile"
+                  style={{ background: TILE_COLORS[index % TILE_COLORS.length] }}
+                >
+                  {habit.label.charAt(0)}
+                </span>
+                <span className="habit-info">
+                  <span className="habit-label">{habit.label}</span>
+                  <span className="habit-method">
+                    {habit.method === 'bgm' ? 'BGM' : `音声「${habit.phrase ?? ''}」`}
+                  </span>
                 </span>
                 <button
                   type="button"
-                  className="btn btn-ghost btn-small btn-preview"
+                  className="btn btn-small btn-preview"
                   onClick={() => togglePreview(habit.habit_id, habit.audio_url)}
                 >
-                  {playingHabitId === habit.habit_id ? '⏹ 停止' : '▶ 試聴'}
+                  {playingHabitId === habit.habit_id ? (
+                    <>
+                      <StopIcon /> 停止
+                    </>
+                  ) : (
+                    <>
+                      <PlayIcon /> 試聴
+                    </>
+                  )}
                 </button>
               </li>
             ))}
