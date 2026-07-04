@@ -55,7 +55,7 @@ jobs:
             --allow-unauthenticated \
             --max-instances 1 \
             --memory 512Mi \
-            --set-env-vars "REPOSITORY_BACKEND=firestore,AGENTS_BACKEND=adk,ASSETS_BACKEND=gcs,SPEAKER_ADAPTER=voicemonkey,GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }},GOOGLE_CLOUD_LOCATION=asia-northeast1,GOOGLE_GENAI_USE_VERTEXAI=TRUE,GCS_ASSETS_BUCKET=${{ secrets.GCS_ASSETS_BUCKET }},VOICEMONKEY_DEVICE=${{ secrets.VOICEMONKEY_DEVICE }}" \
+            --set-env-vars "REPOSITORY_BACKEND=firestore,AGENTS_BACKEND=adk,ASSETS_BACKEND=gcs,SPEAKER_ADAPTER=voicemonkey,GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }},GOOGLE_CLOUD_LOCATION=global,GOOGLE_GENAI_USE_VERTEXAI=TRUE,GCS_ASSETS_BUCKET=${{ secrets.GCS_ASSETS_BUCKET }},VOICEMONKEY_DEVICE=${{ secrets.VOICEMONKEY_DEVICE }}" \
             --set-secrets "VOICEMONKEY_TOKEN=voicemonkey-token:latest"
       - name: Health check
         run: |

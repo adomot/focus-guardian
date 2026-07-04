@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     google_cloud_project: str = ""
-    google_cloud_location: str = "asia-northeast1"
+    google_cloud_location: str = "global"  # Gemini モデルは global ロケーション (実機確認済み)
 
     repository_backend: Literal["memory", "firestore"] = "memory"
     agents_backend: Literal["fake", "adk"] = "fake"
