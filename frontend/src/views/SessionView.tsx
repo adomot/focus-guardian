@@ -62,6 +62,9 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
   const [connectionLost, setConnectionLost] = useState(false)
   const [elapsedSeconds, setElapsedSeconds] = useState(0)
   const [ending, setEnding] = useState(false)
+  const [judging, setJudging] = useState(false)
+  const [nextJudgeAt, setNextJudgeAt] = useState<number | null>(null)
+  const intervalMs = resolveCaptureIntervalMs(window.location.search)
 
   const finishSession = useCallback(async () => {
     if (endingRef.current) {
@@ -107,6 +110,8 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
         return
       }
       inFlight = true
+      setJudging(true)
+      setNextJudgeAt(Date.now() + resolveCaptureIntervalMs(window.location.search))
       try {
         const blob = await captureFrame(video)
         const result = await postFrame(session.session_id, blob)
@@ -141,6 +146,7 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
         }
       } finally {
         inFlight = false
+        setJudging(false)
       }
     }
 
@@ -174,12 +180,16 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
   return (
     <div className="view session-view">
       <header className="view-header">
-        <h1>集中セッション</h1>
+        <h1>集中セッション（テスト）</h1>
         <div className="recording-indicator">
           <span className="recording-dot" />
           監視中
         </div>
       </header>
+      <p className="muted interval-note">
+        ※ 本来の監視はカメラデバイスが担う想定です（ブラウザ版はテスト用）。画像判定は{' '}
+        {Math.round(intervalMs / 1000)} 秒ごとに実行されます
+      </p>
 
       {connectionLost && (
         <div className="banner banner-error">
@@ -209,6 +219,16 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
         <div className="metric-card">
           <div className="metric-value">{interventionCount}</div>
           <div className="metric-label">介入回数</div>
+        </div>
+        <div className="metric-card">
+          <div className="metric-value">
+            {judging
+              ? '判定中…'
+              : nextJudgeAt !== null
+                ? `${Math.max(0, Math.ceil((nextJudgeAt - Date.now()) / 1000))}秒`
+                : '--'}
+          </div>
+          <div className="metric-label">次の画像判定</div>
         </div>
       </section>
 

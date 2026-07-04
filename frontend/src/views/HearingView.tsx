@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { replyHearing, startHearing } from '../api'
 import type { HearingChoice, HearingTurn } from '../types'
+import botAvatar from '../assets/bot-avatar.png'
+
+const BOT_REPLY_DELAY_MS = 200
+
+const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms))
 
 interface ChatMessage {
   id: number
@@ -35,7 +40,8 @@ export function HearingView({ onBackHome }: HearingViewProps) {
     startedRef.current = true
     setSending(true)
     startHearing()
-      .then((first) => {
+      .then(async (first) => {
+        await wait(BOT_REPLY_DELAY_MS)
         appendMessage('bot', first.bot_message)
         setTurn(first)
       })
@@ -58,6 +64,7 @@ export function HearingView({ onBackHome }: HearingViewProps) {
     setError(null)
     try {
       const next = await replyHearing(turn.hearing_id, { text, choice_id: choiceId })
+      await wait(BOT_REPLY_DELAY_MS)
       appendMessage('bot', next.bot_message)
       setTurn(next)
     } catch (err: unknown) {
@@ -95,11 +102,16 @@ export function HearingView({ onBackHome }: HearingViewProps) {
       <div className="chat-scroll" ref={scrollRef}>
         {messages.map((message) => (
           <div key={message.id} className={`bubble-row bubble-row-${message.role}`}>
+            {message.role === 'bot' && (
+              <img className="chat-avatar" src={botAvatar} alt="Focus Guardian" />
+            )}
             <div className={`bubble bubble-${message.role}`}>{message.text}</div>
+            {message.role === 'user' && <div className="chat-avatar chat-avatar-user">🙋</div>}
           </div>
         ))}
         {sending && (
           <div className="bubble-row bubble-row-bot">
+            <img className="chat-avatar" src={botAvatar} alt="" />
             <div className="bubble bubble-bot bubble-typing">...</div>
           </div>
         )}
