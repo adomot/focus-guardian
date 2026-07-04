@@ -465,6 +465,29 @@
   letter-spacing: 0.08em;
 }
 
+.bgm-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--green-tint);
+  border: 2px solid var(--green-border);
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+
+.bgm-note {
+  color: var(--green-dark);
+  font-size: 1.1rem;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.bgm-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--green-dark);
+}
+
 .reason-card {
   gap: 4px;
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ApiError, endSession, postFrame } from '../api'
-import { playInterventionAudio } from '../audio'
+import { playInterventionAudio, startLoopingBgm, stopLoopingBgm } from '../audio'
 import { captureFrame, resolveCaptureIntervalMs } from '../capture'
 import { AlertIcon, CheckCircleIcon, HourglassIcon, UserOffIcon } from '../icons'
 import type { Judgment, JudgmentState, SessionState, SessionSummary } from '../types'
@@ -66,7 +66,13 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
   const [ending, setEnding] = useState(false)
   const [judging, setJudging] = useState(false)
   const [nextJudgeAt, setNextJudgeAt] = useState<number | null>(null)
+  const [bgmPlaying, setBgmPlaying] = useState(false)
   const intervalMs = resolveCaptureIntervalMs(window.location.search)
+
+  const stopBgm = useCallback(() => {
+    stopLoopingBgm()
+    setBgmPlaying(false)
+  }, [])
 
   const finishSession = useCallback(async () => {
     if (endingRef.current) {
@@ -74,6 +80,7 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
     }
     endingRef.current = true
     setEnding(true)
+    stopBgm()
     stream.getTracks().forEach((track) => track.stop())
     try {
       const summary = await endSession(session.session_id)
@@ -92,6 +99,8 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
     }, 1000)
     return () => window.clearInterval(timerId)
   }, [])
+
+  useEffect(() => () => stopLoopingBgm(), [])
 
   useEffect(() => {
     const video = videoRef.current
@@ -125,7 +134,11 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
         setLatestJudgment(result.judgment)
         if (result.intervention) {
           setInterventionCount((count) => count + 1)
-          if (result.intervention.delivered_by === 'browser') {
+          // テスト用ブラウザセッションでは検知時に必ずこの画面から音を出す
+          if (result.intervention.method === 'bgm') {
+            startLoopingBgm(result.intervention.audio_url)
+            setBgmPlaying(true)
+          } else {
             playInterventionAudio(result.intervention.audio_url)
           }
         }
@@ -235,6 +248,16 @@ export function SessionView({ session, stream, onEnded, onAborted }: SessionView
           <div className="metric-label">次の画像判定</div>
         </div>
       </section>
+
+      {bgmPlaying && (
+        <div className="bgm-bar">
+          <span className="bgm-note">♪</span>
+          <span className="bgm-text">BGM 再生中 — 集中を取り戻しましょう</span>
+          <button type="button" className="btn btn-small btn-preview" onClick={stopBgm}>
+            停止
+          </button>
+        </div>
+      )}
 
       {latestJudgment?.reason && (
         <section className="card reason-card">
