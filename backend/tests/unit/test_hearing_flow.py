@@ -107,6 +107,56 @@ async def test_structuring_failure_reprompts(config_repo):
     assert "うまく理解できませんでした" in turn.bot_message
 
 
+async def test_habit_step_offers_recommendations(hearing_flow, config_repo):
+    """悪習慣の質問では固定レコメンドを選択肢として提示し、選択でも自由入力でも進める"""
+    turn = await hearing_flow.start()
+    hid = turn.hearing_id
+
+    turn = await hearing_flow.reply(hid, text("美容検定1級が欲しい！"))
+    assert "悪習慣" in turn.bot_message
+    assert turn.input_mode == "free_text"  # 自由入力も併用可
+    assert turn.choices is not None
+    assert len(turn.choices) == 3
+    assert all(c.choice_id.startswith("rec_") for c in turn.choices)
+    smartphone = turn.choices[0]
+
+    # レコメンド選択でそのまま構造化へ進む
+    turn = await hearing_flow.reply(hid, choice(smartphone.choice_id))
+    assert "どのような通知" in turn.bot_message
+
+    turn = await hearing_flow.reply(hid, choice("speech"))
+    turn = await hearing_flow.reply(hid, text("スマホを置け"))
+
+    # 追加質問でも残りのレコメンド + done を提示し、選択済みは除外される
+    assert "他に何か悪習慣" in turn.bot_message
+    choice_ids = {c.choice_id for c in turn.choices}
+    assert "done" in choice_ids
+    assert smartphone.choice_id not in choice_ids
+    assert len([c for c in turn.choices if c.choice_id.startswith("rec_")]) == 2
+
+    turn = await hearing_flow.reply(hid, choice("done"))
+    assert turn.done is True
+
+    config = await config_repo.get(turn.config_id)
+    assert config.habits[0].label == smartphone.label
+
+
+async def test_habit_reprompt_keeps_recommendations(hearing_flow):
+    """悪習慣ステップの再質問でもレコメンドを提示し続ける (1.10)"""
+    turn = await hearing_flow.start()
+    hid = turn.hearing_id
+    await hearing_flow.reply(hid, text("目標"))
+
+    turn = await hearing_flow.reply(hid, UserInput())
+    assert "悪習慣" in turn.bot_message
+    assert turn.choices is not None and len(turn.choices) == 3
+
+    # 不正な choice_id でも同一質問 + レコメンド再提示
+    turn = await hearing_flow.reply(hid, choice("invalid"))
+    assert "悪習慣" in turn.bot_message
+    assert turn.choices is not None and len(turn.choices) == 3
+
+
 async def test_unknown_hearing_id_raises(hearing_flow):
     with pytest.raises(HearingNotFoundError):
         await hearing_flow.reply("no-such-id", text("x"))

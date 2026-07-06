@@ -29,6 +29,13 @@ NOTIFY_CHOICES = [
 ]
 DONE_CHOICE = Choice(choice_id="done", label="もう大丈夫")
 
+# 悪習慣の定番レコメンド (要件 1.2 補助)。選択でも自由入力でも受け付ける
+HABIT_RECOMMENDATIONS = [
+    Choice(choice_id="rec_smartphone", label="ついスマホをいじってしまう"),
+    Choice(choice_id="rec_nap", label="つい居眠りをしてしまう"),
+    Choice(choice_id="rec_snack", label="お菓子をダラダラ食べてしまう"),
+]
+
 
 class HearingNotFoundError(Exception):
     pass
@@ -84,7 +91,9 @@ class HearingFlowService:
         state.goal = text
         state.step = HearingStep.HABIT
         return self._turn(
-            state, "承知しました！では、それの障壁となっている悪習慣を教えてください。"
+            state,
+            "承知しました！では、それの障壁となっている悪習慣を教えてください。",
+            choices=self._habit_recommendations(state),
         )
 
     async def _on_habit(self, state: HearingState, user_input: UserInput) -> HearingTurn:
@@ -92,19 +101,26 @@ class HearingFlowService:
             state,
             user_input,
             reprompt="それの障壁となっている悪習慣を教えてください。",
+            reprompt_choices=self._habit_recommendations(state),
         )
 
     async def _accept_habit(
-        self, state: HearingState, user_input: UserInput, reprompt: str
+        self,
+        state: HearingState,
+        user_input: UserInput,
+        reprompt: str,
+        reprompt_choices: list[Choice] | None = None,
     ) -> HearingTurn:
-        text = (user_input.text or "").strip()
+        text = self._resolve_habit_text(user_input)
         if not text:
-            return self._turn(state, reprompt)
+            return self._turn(state, reprompt, choices=reprompt_choices)
         try:
             condition = await self._structuring.structure_habit(text)
         except AgentError:
             logger.warning("habit structuring failed; re-prompting", exc_info=True)
-            return self._turn(state, f"うまく理解できませんでした。{reprompt}")
+            return self._turn(
+                state, f"うまく理解できませんでした。{reprompt}", choices=reprompt_choices
+            )
         state.current_habit = DraftHabit(
             label=condition.habit_label,
             visual_cues=condition.visual_cues,
@@ -184,9 +200,12 @@ class HearingFlowService:
                 done=True,
                 config_id=config.config_id,
             )
-        if user_input.text and user_input.text.strip():
+        if self._resolve_habit_text(user_input):
             return await self._accept_habit(
-                state, user_input, reprompt="他に何か悪習慣はありますか？"
+                state,
+                user_input,
+                reprompt="他に何か悪習慣はありますか？",
+                reprompt_choices=self._more_habits_choices(state),
             )
         return self._more_habits_turn(state, "")
 
@@ -207,7 +226,27 @@ class HearingFlowService:
 
     def _more_habits_turn(self, state: HearingState, prefix: str) -> HearingTurn:
         message = f"{prefix}他に何か悪習慣はありますか？".lstrip()
-        return self._turn(state, message, choices=[DONE_CHOICE], input_mode="free_text")
+        return self._turn(
+            state, message, choices=self._more_habits_choices(state), input_mode="free_text"
+        )
+
+    def _habit_recommendations(self, state: HearingState) -> list[Choice]:
+        """登録済みラベルと重複しないレコメンドを返す"""
+        used = {habit.label for habit in state.habits}
+        return [c for c in HABIT_RECOMMENDATIONS if c.label not in used]
+
+    def _more_habits_choices(self, state: HearingState) -> list[Choice]:
+        return [*self._habit_recommendations(state), DONE_CHOICE]
+
+    def _resolve_habit_text(self, user_input: UserInput) -> str:
+        """自由入力またはレコメンド選択を悪習慣テキストに解決する"""
+        if user_input.choice_id:
+            rec = next(
+                (c for c in HABIT_RECOMMENDATIONS if c.choice_id == user_input.choice_id), None
+            )
+            if rec is not None:
+                return rec.label
+        return (user_input.text or "").strip()
 
     async def _save_config(self, state: HearingState) -> MonitoringConfig:
         habits = [
