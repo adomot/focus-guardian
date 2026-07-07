@@ -119,7 +119,6 @@ export function HomeView({ onStartHearing, onSessionStart }: HomeViewProps) {
     <div className="view home-view">
       <header className="app-header">
         <h1>SHIBAKI</h1>
-        <p className="tagline">サボり絶対しばく君</p>
       </header>
 
       {loadError && <div className="banner banner-error">{loadError}</div>}

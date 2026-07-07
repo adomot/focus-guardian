@@ -33,13 +33,6 @@
   color: var(--green-dark);
 }
 
-.tagline {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
 .muted {
   color: var(--muted);
 }
