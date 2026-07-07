@@ -27,9 +27,17 @@
 }
 
 .app-header h1 {
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
+  color: var(--green-dark);
+}
+
+.tagline {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .muted {

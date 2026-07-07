@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 480px; height: 360px; overflow: hidden; font-family: "Hiragino Maru Gothic ProN", sans-serif; }
+  .room {
+    position: relative; width: 480px; height: 360px;
+    background: linear-gradient(180deg, #ffe9c7 0%, #ffd9a0 70%, #e8b878 100%);
+  }
+  .window {
+    position: absolute; left: 30px; top: 28px; width: 120px; height: 90px;
+    background: linear-gradient(180deg, #9adcff, #d6f2ff); border: 8px solid #fff;
+    border-radius: 10px; box-shadow: 0 4px 0 rgba(0,0,0,.08);
+  }
+  .window::after { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 6px; background: #fff; transform: translateX(-50%); }
+  .clock {
+    position: absolute; right: 40px; top: 30px; width: 56px; height: 56px; border-radius: 50%;
+    background: #fff; border: 6px solid #ffb84d; box-shadow: 0 4px 0 rgba(0,0,0,.08);
+  }
+  .clock::before { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 16px; background: #555; transform-origin: 50% 100%; transform: translate(-50%,-100%) rotate(40deg); border-radius: 2px; }
+  .clock::after  { content: ''; position: absolute; left: 50%; top: 50%; width: 4px; height: 11px; background: #999; transform-origin: 50% 100%; transform: translate(-50%,-100%) rotate(160deg); border-radius: 2px; }
+
+  .desk { position: absolute; bottom: 0; width: 100%; height: 84px; background: #b07a3f; border-top: 10px solid #c98f4e; }
+
+  .person { position: absolute; left: 178px; bottom: 88px; transition: transform .8s ease; }
+  .head {
+    position: relative; width: 92px; height: 86px; background: #ffd9b3; border-radius: 46px;
+    margin: 0 auto; z-index: 3; transition: transform .8s ease;
+  }
+  .hair { position: absolute; top: -8px; left: -4px; width: 100px; height: 52px; background: #4a3626; border-radius: 50px 50px 22px 22px; }
+  .eye { position: absolute; top: 42px; width: 12px; height: 12px; background: #333; border-radius: 50%; transition: all .5s; }
+  .eye.l { left: 22px; } .eye.r { right: 22px; }
+  .mouth { position: absolute; top: 62px; left: 50%; transform: translateX(-50%); width: 18px; height: 8px; border-bottom: 4px solid #c3763c; border-radius: 0 0 12px 12px; transition: all .5s; }
+  .body {
+    width: 130px; height: 80px; background: #58cc02; border-radius: 40px 40px 0 0;
+    margin: -18px auto 0; z-index: 2; position: relative; transition: transform .8s ease;
+  }
+  .arm {
+    position: absolute; width: 26px; height: 60px; background: #58cc02; border-radius: 14px;
+    top: 22px; transform-origin: 50% 10%; transition: transform .6s ease;
+  }
+  .arm.l { left: 2px; transform: rotate(38deg); }
+  .arm.r { right: 2px; transform: rotate(-38deg); }
+  .hand { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); width: 22px; height: 22px; background: #ffd9b3; border-radius: 50%; }
+
+  .laptop { position: absolute; left: 168px; bottom: 62px; z-index: 4; transition: opacity .5s; }
+  .screen {
+    width: 150px; height: 62px; background: #b8bec9; border: 6px solid #9aa0ad; border-bottom: 0;
+    border-radius: 10px 10px 0 0; position: relative; overflow: hidden;
+  }
+  .screen::after { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    width: 22px; height: 22px; border-radius: 50%; background: #fff; opacity: .8; }
+  .screen .line { display: none; }
+  .kbd { width: 170px; height: 12px; background: #a9a9b5; margin-left: -9px; border-radius: 0 0 10px 10px; }
+
+  .phone {
+    position: absolute; left: 300px; bottom: 150px; width: 44px; height: 74px; z-index: 5;
+    background: #222; border-radius: 10px; border: 4px solid #555;
+    opacity: 0; transform: translateY(30px) rotate(12deg); transition: all .6s ease;
+  }
+  .phone::before { content: ''; position: absolute; inset: 4px; background: linear-gradient(160deg, #1cb0f6, #ff6dcb); border-radius: 5px; }
+
+  .zzz { position: absolute; left: 300px; bottom: 210px; z-index: 6; opacity: 0; transition: opacity .6s; }
+  .zzz span { position: absolute; color: #1cb0f6; font-weight: 800; text-shadow: 2px 2px 0 rgba(255,255,255,.7); }
+  .zzz .z1 { font-size: 22px; left: 0; bottom: 0; }
+  .zzz .z2 { font-size: 30px; left: 20px; bottom: 22px; }
+  .zzz .z3 { font-size: 40px; left: 44px; bottom: 48px; }
+
+  .vignette { position: absolute; inset: 0; z-index: 9; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 62%, rgba(40,20,0,.28) 100%); }
+
+  /* --- phases --- */
+  .phase-typing .arm.l { animation: typeL 0.36s infinite alternate; }
+  .phase-typing .arm.r { animation: typeR 0.36s .18s infinite alternate; }
+  .phase-typing .head { animation: bob 1.6s infinite alternate; }
+  @keyframes typeL { from { transform: rotate(38deg); } to { transform: rotate(46deg); } }
+  @keyframes typeR { from { transform: rotate(-38deg); } to { transform: rotate(-46deg); } }
+  @keyframes bob { from { transform: translateY(0); } to { transform: translateY(3px); } }
+
+  .phase-phone .phone { opacity: 1; transform: translateY(-40px) rotate(4deg); animation: phoneWiggle 1.4s infinite alternate; }
+  .phase-phone .arm.r { transform: rotate(-150deg); }
+  .phase-phone .head { transform: rotate(16deg) translateX(6px); }
+  .phase-phone .eye.r { transform: translateX(6px); }
+  @keyframes phoneWiggle { from { transform: translateY(-40px) rotate(2deg); } to { transform: translateY(-46px) rotate(7deg); } }
+  .phase-phone .mouth { width: 12px; height: 12px; border: 4px solid #c3763c; border-radius: 50%; background: transparent; }
+  @keyframes phoneWiggle { from { transform: translateY(0) rotate(2deg); } to { transform: translateY(-4px) rotate(7deg); } }
+
+  .phase-sleep .head { transform: rotate(24deg) translate(14px, 26px); }
+  .phase-sleep .eye { height: 3px; border-radius: 3px; }
+  .phase-sleep .mouth { width: 10px; }
+  .phase-sleep .body { transform: translateY(10px); }
+  .phase-sleep .arm.l { transform: rotate(64deg); }
+  .phase-sleep .arm.r { transform: rotate(-64deg); }
+  .phase-sleep .zzz { opacity: 1; }
+  .phase-sleep .zzz span { animation: floatZ 2s infinite ease-in-out; }
+  .phase-sleep .zzz .z2 { animation-delay: .4s; }
+  .phase-sleep .zzz .z3 { animation-delay: .8s; }
+  @keyframes floatZ { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+</style>
+</head>
+<body>
+<div class="room" id="room">
+  <div class="window"></div>
+  <div class="clock"></div>
+  <div class="person">
+    <div class="head">
+      <div class="hair"></div>
+      <div class="eye l"></div><div class="eye r"></div>
+      <div class="mouth"></div>
+    </div>
+    <div class="body">
+      <div class="arm l"><div class="hand"></div></div>
+      <div class="arm r"><div class="hand"></div></div>
+    </div>
+  </div>
+  <div class="laptop"><div class="screen"><div class="line l1"></div><div class="line l2"></div><div class="line l3"></div><div class="line l4"></div></div><div class="kbd"></div></div>
+  <div class="phone"></div>
+  <div class="zzz"><span class="z1">z</span><span class="z2">Z</span><span class="z3">Z</span></div>
+  <div class="desk"></div>
+  <div class="vignette"></div>
+</div>
+<script>
+  // 30秒タイムライン: 作業→スマホ→作業→居眠り→作業 (セッションデモの検知タイミングと同期)
+  const PHASES = [
+    { until: 8,  cls: 'phase-typing' },
+    { until: 14, cls: 'phase-phone' },
+    { until: 17, cls: 'phase-typing' },
+    { until: 23, cls: 'phase-sleep' },
+    { until: 30, cls: 'phase-typing' },
+  ]
+  const room = document.getElementById('room')
+  const start = performance.now()
+  function tick() {
+    const t = ((performance.now() - start) / 1000) % 30
+    const phase = PHASES.find((p) => t < p.until) ?? PHASES[0]
+    room.className = 'room ' + phase.cls
+    requestAnimationFrame(tick)
+  }
+  tick()
+</script>
+</body>
+</html>

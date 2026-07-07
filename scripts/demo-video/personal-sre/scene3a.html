@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1280px; height: 720px; overflow: hidden; background: #10151f;
+    font-family: "Hiragino Sans", sans-serif; display: flex; align-items: center; justify-content: center; }
+  .window { width: 860px; height: 640px; background: #171e2c; border-radius: 18px;
+    border: 1px solid #2a3550; box-shadow: 0 24px 70px rgba(0,0,0,.55); overflow: hidden;
+    display: flex; flex-direction: column; }
+  .titlebar { height: 58px; background: #1c2537; display: flex; align-items: center; padding: 0 20px;
+    border-bottom: 1px solid #2a3550; }
+  .dots span { display: inline-block; width: 13px; height: 13px; border-radius: 50%; margin-right: 8px; }
+  .titlebar .name { margin-left: 14px; color: #dfe6f5; font-size: 17px; font-weight: 700; }
+  .titlebar .status { margin-left: auto; color: #8cff9f; font-size: 13px; font-weight: 700; }
+  .chat { flex: 1; padding: 26px 30px; overflow: hidden; }
+  .row { display: flex; margin-bottom: 18px; opacity: 0; transform: translateY(10px);
+    transition: opacity .5s, transform .5s; }
+  .row.on { opacity: 1; transform: translateY(0); }
+  .row.user { justify-content: flex-end; }
+  .bubble { max-width: 78%; padding: 15px 19px; border-radius: 16px; font-size: 18.5px; line-height: 1.65; }
+  .user .bubble { background: #2f6df6; color: #fff; border-bottom-right-radius: 5px; }
+  .ai .bubble { background: #232e47; color: #dfe6f5; border-bottom-left-radius: 5px; }
+  .cursor { display: inline-block; width: 2px; height: 20px; background: #fff; vertical-align: -3px;
+    animation: blink .8s step-start infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .typing span { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #6d7ea6;
+    margin-right: 5px; animation: tp 1.2s infinite; }
+  .typing span:nth-child(2) { animation-delay: .2s; } .typing span:nth-child(3) { animation-delay: .4s; }
+  @keyframes tp { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-7px); } }
+  .deploy { margin-top: 12px; background: #17253a; border: 1px solid #2e4a74; border-radius: 12px;
+    padding: 14px 16px; font-size: 16px; }
+  .deploy .head { color: #8cff9f; font-weight: 800; margin-bottom: 9px; }
+  .deploy .line { display: flex; margin-top: 6px; color: #c8d4ec; }
+  .deploy .k { width: 132px; color: #7f92b8; flex-shrink: 0; }
+  .inputbar { height: 66px; border-top: 1px solid #2a3550; display: flex; align-items: center; padding: 0 18px; }
+  .inputbar .field { flex: 1; height: 40px; background: #101725; border-radius: 999px; border: 1px solid #2a3550;
+    color: #9fb0d0; font-size: 15px; display: flex; align-items: center; padding: 0 18px; }
+  .caption { position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: #0b0f16;
+    color: #7f92b8; display: flex; align-items: center; justify-content: center; font-size: 15px; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+  <div class="window">
+    <div class="titlebar">
+      <div class="dots"><span style="background:#ff5f57"></span><span style="background:#febc2e"></span><span style="background:#28c840"></span></div>
+      <div class="name">Personal SRE — 監視ルール設定</div>
+      <div class="status">● AGENT ONLINE</div>
+    </div>
+    <div class="chat">
+      <div class="row user on"><div class="bubble" id="userText"><span class="cursor"></span></div></div>
+      <div class="row ai" id="typingRow"><div class="bubble typing"><span></span><span></span><span></span></div></div>
+      <div class="row ai" id="aiRow"><div class="bubble">
+        正常稼働＝「机に向かっている」、インシデント＝「ソファでのスマホ操作」として監視基準をデプロイしました。
+        <div class="deploy">
+          <div class="head">✔ MONITORING RULE DEPLOYED</div>
+          <div class="line"><span class="k">正常稼働</span><span>机に向かって学習している</span></div>
+          <div class="line"><span class="k">インシデント</span><span>ソファでスマホを縦に持って操作</span></div>
+          <div class="line"><span class="k">アクション</span><span>スマートスピーカーから警告</span></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="inputbar"><div class="field">メッセージを入力…</div></div>
+  </div>
+  <div class="caption">画面キャプチャ：チャットによる監視ルールのデプロイ</div>
+<script>
+  const text = '今から統計の勉強をする。机から離れて、ソファでスマホを縦に持ってダラダラしてたら警告するシステムにして'
+  const el = document.getElementById('userText')
+  let i = 0
+  const type = () => {
+    if (i <= text.length) {
+      el.innerHTML = text.slice(0, i) + '<span class="cursor"></span>'
+      i += 1
+      setTimeout(type, 88)
+    } else {
+      el.textContent = text
+    }
+  }
+  setTimeout(type, 900)
+  setTimeout(() => document.getElementById('typingRow').classList.add('on'), 7200)
+  setTimeout(() => {
+    document.getElementById('typingRow').style.display = 'none'
+    document.getElementById('aiRow').classList.add('on')
+  }, 10200)
+</script>
+</body>
+</html>

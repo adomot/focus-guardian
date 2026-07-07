@@ -118,7 +118,8 @@ export function HomeView({ onStartHearing, onSessionStart }: HomeViewProps) {
   return (
     <div className="view home-view">
       <header className="app-header">
-        <h1>サボり絶対しばく君</h1>
+        <h1>SHIBAKI</h1>
+        <p className="tagline">サボり絶対しばく君</p>
       </header>
 
       {loadError && <div className="banner banner-error">{loadError}</div>}
@@ -192,7 +193,7 @@ export function HomeView({ onStartHearing, onSessionStart }: HomeViewProps) {
       {cameraDenied && (
         <div className="banner banner-error">
           <p className="banner-title">カメラへのアクセスが許可されていません</p>
-          <p>Focus Guardian はカメラ映像で集中状態を判定するため、カメラの許可が必要です。</p>
+          <p>SHIBAKI はカメラ映像で集中状態を判定するため、カメラの許可が必要です。</p>
           <ol className="recovery-steps">
             <li>ブラウザのアドレスバー左側のカメラ（または鍵）アイコンをクリック</li>
             <li>「カメラ」を「許可」に変更</li>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1280px; height: 720px; overflow: hidden; background: #0d1322;
+    font-family: "Hiragino Sans", sans-serif; color: #e8ecf6; }
+  body::before { content: ''; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(120,150,220,.14) 1.2px, transparent 1.2px);
+    background-size: 34px 34px; }
+  .fade { opacity: 0; transition: opacity 1s ease, transform 1s ease; transform: translateY(16px); }
+  .fade.on { opacity: 1; transform: translateY(0); }
+
+  .title { position: absolute; top: 58px; width: 100%; text-align: center; }
+  .title h1 { font-size: 44px; font-weight: 800; letter-spacing: 3px; }
+  .title h1 span { color: #64d2ff; }
+  .title p { margin-top: 10px; font-size: 21px; color: #9fb0d0; letter-spacing: 2px; }
+
+  .pipeline { position: absolute; top: 218px; left: 70px; right: 70px;
+    display: flex; align-items: center; justify-content: space-between; }
+  .node { width: 218px; text-align: center; }
+  .node .box { background: #17203a; border: 2px solid #2d3f6b; border-radius: 18px;
+    padding: 22px 10px 16px; box-shadow: 0 10px 26px rgba(0,0,0,.4); }
+  .node .icon { font-size: 52px; line-height: 1; }
+  .node .name { margin-top: 12px; font-size: 20px; font-weight: 800; }
+  .node .desc { margin-top: 5px; font-size: 14px; color: #93a5c8; }
+  .link { flex: 1; height: 4px; margin: 0 10px; background: #2d3f6b; position: relative; border-radius: 2px; top: -22px; }
+  .pulse { position: absolute; top: -5px; left: 0; width: 14px; height: 14px; border-radius: 50%;
+    background: #64d2ff; box-shadow: 0 0 14px #64d2ff; opacity: 0; }
+  .flowing .pulse { animation: flow 2.4s linear infinite; }
+  @keyframes flow { 0% { left: -4%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
+
+  .points { position: absolute; left: 70px; right: 70px; top: 452px; display: flex; gap: 34px; }
+  .point { flex: 1; background: #131b31; border: 2px solid #2d3f6b; border-radius: 18px; padding: 24px 28px; }
+  .point .tag { display: inline-block; font-size: 15px; font-weight: 800; padding: 5px 14px;
+    border-radius: 999px; letter-spacing: 1px; }
+  .point.p1 .tag { background: rgba(100,210,255,.16); color: #64d2ff; border: 1px solid #64d2ff; }
+  .point.p2 .tag { background: rgba(140,255,160,.14); color: #8cff9f; border: 1px solid #8cff9f; }
+  .point h3 { margin-top: 13px; font-size: 25px; font-weight: 800; }
+  .point p { margin-top: 9px; font-size: 16.5px; line-height: 1.65; color: #aebbd8; }
+  .point b { color: #e8ecf6; }
+</style>
+</head>
+<body>
+  <div class="title fade" id="title">
+    <h1>意志の力を、<span>非推奨</span>に。</h1>
+    <p>― Personal SRE の導入 ―</p>
+  </div>
+
+  <div class="pipeline">
+    <div class="node fade" id="n1"><div class="box"><div class="icon">📷</div><div class="name">Nest Cam</div><div class="desc">部屋を常時観測</div></div></div>
+    <div class="link" id="l1"><div class="pulse"></div></div>
+    <div class="node fade" id="n2"><div class="box"><div class="icon">☁️</div><div class="name">Google Cloud</div><div class="desc">Cloud Run 上の<br>監視エージェント</div></div></div>
+    <div class="link" id="l2"><div class="pulse"></div></div>
+    <div class="node fade" id="n3"><div class="box"><div class="icon">✨</div><div class="name">Gemini API</div><div class="desc">画像で行動を判定</div></div></div>
+    <div class="link" id="l3"><div class="pulse"></div></div>
+    <div class="node fade" id="n4"><div class="box"><div class="icon">🔊</div><div class="name">Smart Speaker</div><div class="desc">音声で介入</div></div></div>
+  </div>
+
+  <div class="points">
+    <div class="point p1 fade" id="p1">
+      <span class="tag">POINT 1 — Observability</span>
+      <h3>人間の行動に「可観測性」を</h3>
+      <p>ネットワークカメラ × マルチモーダルAI <b>Gemini</b> の統合で、複雑な人の行動をソフトウェア的に観測可能に。</p>
+    </div>
+    <div class="point p2 fade" id="p2">
+      <span class="tag">POINT 2 — Chat to Deploy</span>
+      <h3>チャットだけで監視ルールをデプロイ</h3>
+      <p>コードも設定画面も不要。<b>AIと会話するだけ</b>で今日の目標に合わせた監視ルールを即時生成。<b>画像学習は一切不要</b>。</p>
+    </div>
+  </div>
+
+<script>
+  const on = (id, t) => setTimeout(() => document.getElementById(id).classList.add('on'), t)
+  on('title', 500)
+  on('n1', 6500); on('n2', 8300); on('n3', 10100); on('n4', 11900)
+  setTimeout(() => ['l1','l2','l3'].forEach((id, i) =>
+    setTimeout(() => document.getElementById(id).classList.add('flowing'), i * 400)), 13500)
+  on('p1', 17500)
+  on('p2', 30500)
+</script>
+</body>
+</html>

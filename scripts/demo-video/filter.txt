@@ -1,0 +1,17 @@
+[0:v]format=yuv420p,fade=t=out:st=2.8:d=0.4[v0];
+[1:v]fps=25[base];
+[base][6:v]overlay=x=(W-w)/2:y=H-104:enable='between(t,4.0,15.8)'[c1];
+[c1][7:v]overlay=x=(W-w)/2:y=H-104:enable='between(t,18.8,21.2)'[c2];
+[c2][8:v]overlay=x=(W-w)/2:y=H-104:enable='between(t,22.3,30.2)'[c3];
+[c3][9:v]overlay=x=(W-w)/2:y=H-104:enable='between(t,31.2,36.6)'[c4];
+[c4][10:v]overlay=x=(W-w)/2:y=H-104:enable='between(t,40.2,45.6)'[c5];
+[c5][11:v]overlay=x=(W-w)/2:y=H-104:enable='between(t,49.2,52.6)'[c6];
+[c6]format=yuv420p,fade=t=in:st=0:d=0.3,fade=t=out:st=52.5:d=0.4[v1];
+[2:v]format=yuv420p,fade=t=in:st=0:d=0.3,fade=t=out:st=4.1:d=0.4[v2];
+[v0][v1][v2]concat=n=3:v=1:a=0[v];
+[3:a]atrim=0:60.7,afade=t=in:st=0:d=0.6,afade=t=out:st=58.2:d=2.4[bgma];
+[4:a]asplit=2[alx][aly];
+[alx]adelay=34100[a1];
+[aly]adelay=43100[a2];
+[5:a]adelay=51950[a3];
+[bgma][a1][a2][a3]amix=inputs=4:normalize=0:duration=first[a]

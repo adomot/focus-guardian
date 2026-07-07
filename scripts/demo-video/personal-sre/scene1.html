@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1280px; height: 720px; overflow: hidden; background: #000;
+    font-family: "Hiragino Mincho ProN", serif; }
+  .shot { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+  .shot.on { opacity: 1; }
+  .shot img { width: 1280px; height: 720px; object-fit: cover; }
+  .kb { animation-timing-function: linear; animation-fill-mode: forwards; }
+  #shot1 .kb { animation-name: kb1; animation-duration: 11s; }
+  @keyframes kb1 { from { transform: scale(1.06) translate(0, 8px); } to { transform: scale(1.16) translate(-18px, -10px); } }
+  #shot2 .kb { animation-name: kb2; animation-duration: 16s; animation-delay: 8s; }
+  @keyframes kb2 { from { transform: scale(1.18) translate(20px, 6px); } to { transform: scale(1.05) translate(0, 0); } }
+  .hand { animation: hand 4.6s ease-in-out infinite; }
+  @keyframes hand {
+    0%,100% { transform: translate(0,0) rotate(0deg); }
+    25% { transform: translate(2px,-2px) rotate(.08deg); }
+    50% { transform: translate(-2px,1px) rotate(-.06deg); }
+    75% { transform: translate(1px,2px) rotate(.05deg); }
+  }
+  .grade { position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,10,.45) 100%); }
+  .bottom-fade { position: absolute; left: 0; right: 0; bottom: 0; height: 220px; pointer-events: none;
+    background: linear-gradient(transparent, rgba(0,0,8,.78)); }
+  .telop {
+    position: absolute; bottom: 64px; width: 100%; text-align: center;
+    color: #f2ede2; font-size: 34px; letter-spacing: 4px; font-weight: 600;
+    text-shadow: 0 2px 14px rgba(0,0,0,.9); opacity: 0; transition: opacity 1.8s ease;
+  }
+  .telop.on { opacity: 1; }
+  .bars { position: absolute; left: 0; right: 0; height: 62px; background: #000; z-index: 5; }
+  .bars.top { top: 0; } .bars.bot { bottom: 0; }
+</style>
+</head>
+<body>
+  <div class="bars top"></div><div class="bars bot"></div>
+  <div class="shot on" id="shot1"><div class="hand"><img class="kb" src="s1_desk.png"></div></div>
+  <div class="shot" id="shot2"><div class="hand"><img class="kb" src="s1_sofa.png"></div></div>
+  <div class="grade"></div>
+  <div class="bottom-fade"></div>
+  <div class="telop" id="telop">休日の午後。自己研鑽の時間は、いつもアルゴリズムに奪われる。</div>
+<script>
+  setTimeout(() => {
+    document.getElementById('shot1').classList.remove('on')
+    document.getElementById('shot2').classList.add('on')
+  }, 9000)
+  setTimeout(() => document.getElementById('telop').classList.add('on'), 11500)
+</script>
+</body>
+</html>

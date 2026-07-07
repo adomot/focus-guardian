@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1280px; height: 720px; overflow: hidden; background: #0d1322;
+    font-family: "Hiragino Sans", sans-serif; color: #e8ecf6; }
+  body::before { content: ''; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(120,150,220,.14) 1.2px, transparent 1.2px);
+    background-size: 34px 34px; }
+  .fade { opacity: 0; transition: opacity 1s ease, transform 1s ease; transform: translateY(14px); }
+  .fade.on { opacity: 1; transform: translateY(0); }
+
+  #info { position: absolute; inset: 0; transition: opacity 1.2s ease; }
+  .telop { position: absolute; top: 64px; width: 100%; text-align: center; }
+  .telop h1 { font-size: 42px; font-weight: 800; letter-spacing: 3px; }
+  .telop h1 span { color: #8cff9f; }
+
+  .hub { position: absolute; left: 0; right: 0; top: 240px; text-align: center; }
+  .hub .bubble { display: inline-block; background: #2f6df6; color: #fff; font-size: 21px; font-weight: 700;
+    padding: 17px 30px; border-radius: 999px; box-shadow: 0 10px 34px rgba(47,109,246,.4); }
+  .spokes { position: absolute; top: 430px; left: 80px; right: 80px; display: flex; gap: 26px; }
+  .case { flex: 1; background: #131b31; border: 2px solid #2d3f6b; border-radius: 18px;
+    padding: 24px 18px; text-align: center; }
+  .case .ic { font-size: 46px; }
+  .case h3 { margin-top: 12px; font-size: 20px; font-weight: 800; }
+  .case p { margin-top: 7px; font-size: 14.5px; color: #9fb0d0; line-height: 1.6; }
+  .float { animation: fl 3.4s ease-in-out infinite; }
+  .spokes .case:nth-child(2) { animation-delay: .5s; }
+  .spokes .case:nth-child(3) { animation-delay: 1s; }
+  .spokes .case:nth-child(4) { animation-delay: 1.5s; }
+  @keyframes fl { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+  .conn { position: absolute; top: 302px; left: 638px; width: 4px; height: 122px; background: #2d3f6b; }
+
+  #endcard { position: absolute; inset: 0; opacity: 0; transition: opacity 1.5s ease; }
+  #endcard.on { opacity: 1; }
+  #endcard img { position: absolute; width: 1280px; height: 720px; object-fit: cover; filter: brightness(.42); }
+  .end-inner { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; }
+  .end-inner .small { font-size: 22px; color: #b9c6e2; letter-spacing: 6px; }
+  .end-inner h1 { margin-top: 16px; font-size: 74px; font-weight: 800; letter-spacing: 4px;
+    text-shadow: 0 4px 30px rgba(0,0,0,.7); }
+  .end-inner .app { margin-top: 20px; font-size: 24px; color: #dfe6f5; font-weight: 700; }
+  .end-inner .badge { margin-top: 36px; background: rgba(255,255,255,.94); color: #1c2537;
+    font-size: 18px; font-weight: 800; padding: 11px 30px; border-radius: 999px; }
+</style>
+</head>
+<body>
+  <div id="info">
+    <div class="telop fade" id="telop"><h1>プロンプト<span>1つ</span>で、あらゆる生活基盤に。</h1></div>
+    <div class="hub fade" id="hub"><div class="bubble">💬 「今日は◯◯を監視して」</div></div>
+    <div class="conn fade" id="conn"></div>
+    <div class="spokes">
+      <div class="case fade float" id="c1"><div class="ic">📚</div><h3>TOEIC 学習計測</h3><p>机に向かった時間を自動集計</p></div>
+      <div class="case fade float" id="c2"><div class="ic">🧊</div><h3>3Dモデリング作業</h3><p>姿勢の崩れ・休憩タイミングを警告</p></div>
+      <div class="case fade float" id="c3"><div class="ic">💪</div><h3>筋トレのフォーム確認</h3><p>フォームの乱れをリアルタイム指摘</p></div>
+      <div class="case fade float" id="c4"><div class="ic">🌙</div><h3>夜ふかし防止</h3><p>就寝時刻を過ぎたスマホ操作に介入</p></div>
+    </div>
+  </div>
+
+  <div id="endcard">
+    <img src="s4_hero.png">
+    <div class="end-inner">
+      <div class="small">PERSONAL SRE</div>
+      <h1>サボり絶対しばく君</h1>
+      <div class="app">対話から生まれ、あなたと共に成長する自律型インフラストラクチャ</div>
+      <div class="badge">DevOps × AI Agent Hackathon 2026</div>
+    </div>
+  </div>
+
+<script>
+  const on = (id, t) => setTimeout(() => document.getElementById(id).classList.add('on'), t)
+  on('telop', 600)
+  on('hub', 2600); on('conn', 3400)
+  on('c1', 4000); on('c2', 4900); on('c3', 5800); on('c4', 6700)
+  setTimeout(() => {
+    document.getElementById('info').style.opacity = '0'
+    document.getElementById('endcard').classList.add('on')
+  }, 23500)
+</script>
+</body>
+</html>

@@ -104,7 +104,7 @@ export function HearingView({ onBackHome }: HearingViewProps) {
         {messages.map((message) => (
           <div key={message.id} className={`bubble-row bubble-row-${message.role}`}>
             {message.role === 'bot' && (
-              <img className="chat-avatar" src={botAvatar} alt="Focus Guardian" />
+              <img className="chat-avatar" src={botAvatar} alt="SHIBAKI" />
             )}
             <div className={`bubble bubble-${message.role}`}>{message.text}</div>
             {message.role === 'user' && (
