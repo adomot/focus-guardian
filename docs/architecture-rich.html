@@ -4,7 +4,7 @@
   * { box-sizing: border-box; }
   html,body { margin:0; padding:0; }
   #stage {
-    position: relative; width: 1780px; height: 1120px; background:#ffffff;
+    position: relative; width: 1780px; height: 1250px; background:#ffffff;
     font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",system-ui,sans-serif;
     color:#202124; overflow:hidden;
   }
@@ -38,14 +38,14 @@
 </style>
 
 <div id="stage">
-  <svg id="svg" viewBox="0 0 1780 1120">
+  <svg id="svg" viewBox="0 0 1780 1250">
     <defs>
-      <marker id="m-reg" markerWidth="13" markerHeight="13" refX="9.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,4.6 L0,9.2 z" fill="#1a73e8"/></marker>
-      <marker id="m-reg-s" markerWidth="13" markerHeight="13" refX="1.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M11,0 L0,4.6 L11,9.2 z" fill="#1a73e8"/></marker>
-      <marker id="m-ana" markerWidth="13" markerHeight="13" refX="9.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,4.6 L0,9.2 z" fill="#2b2f36"/></marker>
-      <marker id="m-ana-s" markerWidth="13" markerHeight="13" refX="1.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M11,0 L0,4.6 L11,9.2 z" fill="#2b2f36"/></marker>
-      <marker id="m-data" markerWidth="11" markerHeight="11" refX="8" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4 L0,8 z" fill="#9aa0a6"/></marker>
-      <marker id="m-ret" markerWidth="13" markerHeight="13" refX="9.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,4.6 L0,9.2 z" fill="#1e8e3e"/></marker>
+      <marker id="m-reg" markerWidth="13" markerHeight="13" refX="6.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,4.6 L0,9.2 z" fill="#1a73e8"/></marker>
+      <marker id="m-reg-s" markerWidth="13" markerHeight="13" refX="4.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M11,0 L0,4.6 L11,9.2 z" fill="#1a73e8"/></marker>
+      <marker id="m-ana" markerWidth="13" markerHeight="13" refX="6.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,4.6 L0,9.2 z" fill="#2b2f36"/></marker>
+      <marker id="m-ana-s" markerWidth="13" markerHeight="13" refX="4.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M11,0 L0,4.6 L11,9.2 z" fill="#2b2f36"/></marker>
+      <marker id="m-data" markerWidth="11" markerHeight="11" refX="6" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4 L0,8 z" fill="#9aa0a6"/></marker>
+      <marker id="m-ret" markerWidth="13" markerHeight="13" refX="6.5" refY="4.6" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L11,4.6 L0,9.2 z" fill="#1e8e3e"/></marker>
     </defs>
   </svg>
 
@@ -62,44 +62,44 @@ const ICONS = {"cloud-run": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL
 const r = 44;
 
 const N = {
-  user:      {cx:170, cy:600, icon:"user", lb:"ユーザー", sb:"（作業中）"},
-  chatui:    {cx:430, cy:350, icon:"chat", lb:"チャットUI", sb:"ヒアリング"},
-  webcam:    {cx:430, cy:860, icon:"webcam", lb:"Webカメラ", sb:"定期キャプチャ"},
-  reg_api:   {cx:710, cy:350, icon:"cloud-run", lb:"登録API", sb:"Cloud Run"},
-  ana_api:   {cx:710, cy:860, icon:"cloud-run", lb:"分析API", sb:"Cloud Run"},
-  firestore: {cx:710, cy:605, icon:"firestore", lb:"Firestore", sb:"監視対象の行動・履歴"},
-  gemini_s:  {cx:990, cy:350, icon:"vertexai", lb:"Gemini（構造化）", sb:"行動→検知条件"},
-  gemini_j:  {cx:990, cy:860, icon:"vertexai", lb:"Gemini（判定）", sb:"画像＋条件で判定"},
-  tts:       {cx:1270,cy:500, icon:"text-to-speech", lb:"Text-to-Speech", sb:"日本語音声を生成"},
-  gcs:       {cx:1270,cy:710, icon:"cloud-storage", lb:"Cloud Storage", sb:"指摘音声"},
-  speaker:   {cx:1540,cy:860, icon:"speaker", lb:"外部スピーカー", sb:"Google Home 等"},
+  user:      {cx:170, cy:635, icon:"user", lb:"ユーザー", sb:"作業中"},
+  chatui:    {cx:430, cy:390, icon:"chat", lb:"チャットUI", sb:"行動をヒアリング"},
+  webcam:    {cx:430, cy:880, icon:"webcam", lb:"Webカメラ", sb:"定期キャプチャ"},
+  reg_api:   {cx:710, cy:390, icon:"cloud-run", lb:"Cloud Run", sb:"登録API"},
+  gemini_s:  {cx:990, cy:390, icon:"vertexai", lb:"Gemini", sb:"行動→検知条件に構造化"},
+  tts:       {cx:1270,cy:500, icon:"text-to-speech", lb:"Text-to-Speech", sb:"指摘音声を合成", top:true},
+  firestore: {cx:710, cy:650, icon:"firestore", lb:"Firestore", sb:"監視対象の行動・履歴"},
+  gcs:       {cx:1270,cy:650, icon:"cloud-storage", lb:"Cloud Storage", sb:"指摘音声を保存"},
+  ana_api:   {cx:990, cy:880, icon:"cloud-run", lb:"Cloud Run", sb:"分析API"},
+  gemini_j:  {cx:1270,cy:880, icon:"vertexai", lb:"Gemini", sb:"画像＋条件で通知判定"},
+  speaker:   {cx:990, cy:1110, icon:"speaker", lb:"スピーカー", sb:"Google Home 等"},
 };
 
-const GROUPS = [ {x:600, y:280, w:840, h:690, head:"Google Cloud", icon:"google-cloud"} ];
+const GROUPS = [ {x:600, y:255, w:840, h:745, head:"Google Cloud", icon:"google-cloud"} ];
 const CHIPS = [
-  {cx:430, cy:288, cls:"reg", t:"① 登録フェーズ"},
-  {cx:430, cy:792, cls:"ana", t:"② 監視フェーズ"},
+  {cx:430, cy:322, cls:"reg", t:"① 登録フェーズ"},
+  {cx:430, cy:812, cls:"ana", t:"② 監視フェーズ"},
 ];
 
 const A=(id,s)=>{const n=N[id];return s=="r"?[n.cx+r,n.cy]:s=="l"?[n.cx-r,n.cy]:s=="t"?[n.cx,n.cy-r]:[n.cx,n.cy+r];};
 
 const E = [
   // ① 登録フェーズ
-  {pts:[A("user","r"),[320,600],[320,350],A("chatui","l")], k:"reg", label:"監視対象の行動を入力", lp:[320,476]},
-  {pts:[A("chatui","r"),A("reg_api","l")], k:"reg", label:"登録", lp:[570,322]},
-  {pts:[A("reg_api","r"),A("gemini_s","l")], k:"reg", both:true, label:"行動を構造化", lp:[850,322]},
-  {pts:[[710,448],A("firestore","t")], k:"reg", label:"検知条件を保存", lp:[710,505]},
-  {pts:[[748,452],[748,500],A("tts","l")], k:"data", label:"指摘音声を合成", lp:[1010,500]},
-  {pts:[A("tts","b"),A("gcs","t")], k:"data", label:"保存", lp:[1308,605]},
+  {pts:[[210,617],[308,617],[308,390],A("chatui","l")], k:"reg", label:"監視対象の行動を入力", lp:[308,505]},
+  {pts:[A("chatui","r"),A("reg_api","l")], k:"reg", label:"登録", lp:[570,362]},
+  {pts:[A("reg_api","r"),A("gemini_s","l")], k:"reg", both:true, label:"行動を送信", lp:[850,362]},
+  {pts:[[710,490],A("firestore","t")], k:"reg", label:"検知条件を保存", lp:[710,555]},
+  {pts:[[734,490],[734,500],A("tts","l")], k:"data", label:"指摘フレーズを送信", lp:[1000,500]},
+  {pts:[A("tts","b"),A("gcs","t")], k:"data", label:"保存", lp:[1314,575]},
   // ② 監視フェーズ
-  {pts:[A("user","r"),[320,600],[320,860],A("webcam","l")], k:"ana", label:"撮影", lp:[320,730]},
-  {pts:[A("webcam","r"),A("ana_api","l")], k:"ana", label:"画像を送信", lp:[570,832]},
-  {pts:[[710,700],A("ana_api","t")], k:"data", label:"監視対象の行動を取得", lp:[710,745]},
-  {pts:[A("ana_api","r"),A("gemini_j","l")], k:"ana", both:true, label:"画像＋行動で通知判定", lp:[850,832]},
-  {pts:[A("gcs","l"),[740,710],[740,816]], k:"data", label:"指摘音声を取得", lp:[1005,710]},
-  {pts:[[710,955],[710,984],[1540,984],A("speaker","b")], k:"ana", label:"指摘音声を転送", lp:[1120,984]},
+  {pts:[[210,653],[308,653],[308,880],A("webcam","l")], k:"ana", label:"撮影", lp:[308,770]},
+  {pts:[A("webcam","r"),A("ana_api","l")], k:"ana", label:"画像を送信", lp:[700,852]},
+  {pts:[[710,745],[710,802],[980,802],[980,834]], k:"data", label:"監視対象の行動を取得", lp:[836,802]},
+  {pts:[[1270,745],[1270,802],[1000,802],[1000,834]], k:"data", label:"指摘音声を取得", lp:[1144,802]},
+  {pts:[A("ana_api","r"),A("gemini_j","l")], k:"ana", both:true, label:"画像＋行動を送信", lp:[1130,858]},
+  {pts:[[990,975],A("speaker","t")], k:"ana", label:"指摘音声を転送", lp:[1085,1020]},
   // 復帰通知
-  {pts:[A("speaker","r"),[1668,860],[1668,1066],[70,1066],[70,600],A("user","l")], k:"ret", label:"音声で通知", lp:[860,1066]},
+  {pts:[A("speaker","l"),[70,1110],[70,635],A("user","l")], k:"ret", label:"音声で通知", lp:[460,1088]},
 ];
 
 const svg=document.getElementById("svg"), NS="http://www.w3.org/2000/svg", RAD=6;
@@ -121,7 +121,7 @@ for(const e of E){
   p.setAttribute("d",roundedPath(e.pts)); p.setAttribute("fill","none");
   p.setAttribute("stroke",STROKE[e.k]);
   p.setAttribute("stroke-width", e.k==="data"?2.2:3.4);
-  p.setAttribute("stroke-linecap","round"); p.setAttribute("stroke-linejoin","round");
+  p.setAttribute("stroke-linecap","butt"); p.setAttribute("stroke-linejoin","round");
   if(e.k==="data") p.setAttribute("stroke-dasharray","2 5");
   p.setAttribute("marker-end",MK[e.k]);
   if(e.both) p.setAttribute("marker-start",MKS[e.k]);

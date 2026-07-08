@@ -16,41 +16,14 @@ DevOps × AI Agent Hackathon 2026 提出作品。
 
 ## アーキテクチャ
 
-```mermaid
-graph TB
-    subgraph Browser[ブラウザ]
-        UI[ヒアリングチャット / ダッシュボード]
-        Cam[Webカメラ定期キャプチャ]
-        FB[フォールバック音声再生]
-    end
-    subgraph CloudRun[Cloud Run]
-        API[FastAPI]
-        Flow[ヒアリング ステートマシン]
-        SA[StructuringAgent ADK]
-        JA[JudgeAgent ADK]
-        Policy[InterventionPolicy]
-        Speaker[SpeakerAdapter]
-    end
-    Gemini[Vertex AI Gemini 2.5 Flash Lite]
-    TTS[Cloud Text to Speech]
-    FS[(Firestore)]
-    GCS[(Cloud Storage)]
-    VM[Voice Monkey API]
-    Echo[Amazon Echo]
+![Focus Guardian システムアーキテクチャ](docs/architecture-rich.png)
 
-    Cam -->|JPEG 60秒毎| API
-    UI --> API
-    API --> Flow --> SA --> Gemini
-    Flow --> TTS --> GCS
-    API --> JA --> Gemini
-    JA --> Policy --> Speaker --> VM --> Echo
-    Policy --> FS
-    Flow --> FS
-    Speaker -.失敗時.-> FB
-```
+**① 登録フェーズ**: ユーザがチャット UI で監視対象の行動を入力すると、登録 API（Cloud Run）が Gemini で検知条件へ構造化して Firestore に保存し、あわせて指摘フレーズを Text-to-Speech で音声合成して Cloud Storage に保存します。
 
-- **画像はどこにも保存しません**。判定はリクエストスコープで完結し、Firestore に残るのは構造化された判定結果・介入履歴のみです
-- カメラ入力（Web カメラ → Nest Cam）と出力デバイス（Alexa → Google Home）は設定変更のみで差し替え可能なアダプタ構成です
+**② 監視フェーズ**: Web カメラが定期キャプチャした画像を分析 API（Cloud Run）へ送信。分析 API は Firestore の監視対象の行動と画像を Gemini に渡して通知要否を判定し、通知する場合は Cloud Storage から指摘音声を取得してスピーカー（Google Home 等）へ転送し、作業へ引き戻します。
+
+- **画像はどこにも保存しません**。判定はリクエストスコープで完結し、Firestore に残るのは構造化された検知条件・判定履歴のみです
+- カメラ入力（Web カメラ → Nest Cam）と出力デバイス（スピーカー）は設定変更のみで差し替え可能なアダプタ構成です
 
 ## 技術スタック
 
