@@ -6,11 +6,17 @@ from dataclasses import dataclass, field
 from app.adapters.camera import WebcamPushSource
 from app.adapters.speaker import NullSpeaker, SpeakerAdapter, VoiceMonkeySpeaker
 from app.agents.base import JudgeAgentPort, StructuringAgentPort
+from app.agents.rate_limited import RateLimitedJudgeAgent, RateLimitedStructuringAgent
 from app.config import Settings
 from app.repositories.base import ConfigRepository
 from app.services.hearing_flow import HearingFlowService
 from app.services.intervention_policy import InterventionPolicy
 from app.services.monitoring import MonitoringService
+from app.services.rate_limiter import (
+    FirestoreDailyRateLimiter,
+    GlobalRateLimiter,
+    MemoryDailyRateLimiter,
+)
 from app.services.session_service import SessionService
 from app.services.speech_assets import (
     FakeSpeechAssetService,
@@ -50,17 +56,22 @@ class Container:
         self.rate_limiter = FrameRateLimiter(self.settings.frame_rate_limit_per_minute)
 
 
-def _build_repositories(settings: Settings):
-    if settings.repository_backend == "firestore":
-        from google.cloud import firestore
+def _build_firestore_client(settings: Settings):
+    if settings.repository_backend != "firestore":
+        return None
+    from google.cloud import firestore
 
+    return firestore.AsyncClient(project=settings.google_cloud_project or None)
+
+
+def _build_repositories(settings: Settings, client):
+    if client is not None:
         from app.repositories.firestore import (
             FirestoreConfigRepository,
             FirestoreHearingRepository,
             FirestoreSessionRepository,
         )
 
-        client = firestore.AsyncClient(project=settings.google_cloud_project or None)
         return (
             FirestoreConfigRepository(client),
             FirestoreHearingRepository(client),
@@ -73,6 +84,12 @@ def _build_repositories(settings: Settings):
     )
 
     return MemoryConfigRepository(), MemoryHearingRepository(), MemorySessionRepository()
+
+
+def _build_rate_limiter(settings: Settings, client) -> GlobalRateLimiter:
+    if client is not None:
+        return FirestoreDailyRateLimiter(client, settings.gemini_daily_limit)
+    return MemoryDailyRateLimiter(settings.gemini_daily_limit)
 
 
 def _build_agents(settings: Settings) -> tuple[StructuringAgentPort, JudgeAgentPort]:
@@ -105,8 +122,12 @@ def _build_speaker(settings: Settings) -> SpeakerAdapter:
 
 
 def build_container(settings: Settings) -> Container:
-    configs, hearings, sessions = _build_repositories(settings)
+    client = _build_firestore_client(settings)
+    configs, hearings, sessions = _build_repositories(settings, client)
+    limiter = _build_rate_limiter(settings, client)
     structuring, judge = _build_agents(settings)
+    structuring = RateLimitedStructuringAgent(structuring, limiter)
+    judge = RateLimitedJudgeAgent(judge, limiter)
     assets = _build_assets(settings)
     speaker = _build_speaker(settings)
     camera = WebcamPushSource()

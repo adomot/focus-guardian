@@ -63,9 +63,10 @@ await page.getByRole('button', { name: '言葉で通知する' }).click()
 mark('言葉で通知を選択')
 
 await waitBot('どのような言葉')
-await pause(1800)
+await pause(2200)
 mark('通知フレーズ入力')
-await typeAndSend('スマホを置いて、勉強に戻ってください', 80)
+await typeAndSend('いてこますぞ', 150)
+await pause(1200)
 
 await waitBot('他に何か悪習慣')
 mark('追加質問+レコメンド表示(複数設定可の説明)')

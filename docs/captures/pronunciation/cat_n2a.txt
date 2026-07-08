@@ -1,0 +1,5 @@
+file '/Users/keisuke_main/company/hackathon-findy/docs/captures/pronunciation/t_n2a_pre.wav'
+file '/Users/keisuke_main/company/hackathon-findy/docs/captures/pronunciation/g10.wav'
+file '/Users/keisuke_main/company/hackathon-findy/docs/captures/pronunciation/t_desu.wav'
+file '/Users/keisuke_main/company/hackathon-findy/docs/captures/pronunciation/g38.wav'
+file '/Users/keisuke_main/company/hackathon-findy/docs/captures/pronunciation/t_n2a_post.wav'

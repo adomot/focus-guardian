@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     consecutive_threshold: int = 2
     confidence_threshold: float = 0.7
     frame_rate_limit_per_minute: int = 10
+    gemini_daily_limit: int = 300
     max_frame_bytes: int = 1_000_000
 
     static_dir: str = "static"

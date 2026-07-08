@@ -12,6 +12,14 @@ class AgentError(Exception):
     """
 
 
+class RateLimitExceededError(AgentError):
+    """Gemini の日次呼び出し上限に達した。翌日のリセットまで呼び出しを止める。
+
+    AgentError を継承するため、判定・ヒアリング双方の既存エラー経路で
+    そのまま処理される (判定はスキップして次周期で再試行)。
+    """
+
+
 class StructuringAgentPort(Protocol):
     async def structure_habit(self, raw_text: str) -> DetectionCondition: ...
 
